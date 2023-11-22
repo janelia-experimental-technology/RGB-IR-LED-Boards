@@ -1,0 +1,1 @@
+The RGB-IR board should be 0.032" thickness with 2 oz copper traces
