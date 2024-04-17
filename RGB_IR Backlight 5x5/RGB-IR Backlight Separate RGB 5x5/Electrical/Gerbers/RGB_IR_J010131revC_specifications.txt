@@ -1,0 +1,6 @@
+RGB_IR_J010131revC_specifications
+
+2 layers 
+0.8mm finished thickness
+2 oz copper
+white soldermask with black silkscreen
