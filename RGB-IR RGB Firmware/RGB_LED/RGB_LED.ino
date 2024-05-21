@@ -66,7 +66,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20231218
+#define VERSION 20240430
+
+// 20240430 sws
+// - initial setting of cmdMode PARALLEL not SERIES to easier work with FPGA control 
 
 // 20231218 sws
 // - a step with no pulse widths > 0 would go on forever. So now, if a pulse period is specified and width is 0, run
@@ -633,7 +636,7 @@ void writeUint(unsigned int addr, uint16_t x)
 #define SETDIGITAL  0xF7
 
 
-uint8_t cmdMode = SERIES;
+uint8_t cmdMode = PARALLEL;
 
 //uint8_t markerOnCmd[] = { BMARKON, GMARKON, RMARKON };
 uint8_t markerOffCmd[] = { BMARKOFF, GMARKOFF, RMARKOFF, DMARKOFF};
@@ -752,7 +755,9 @@ void colorSet(int8_t colors)
         colorOn = colorOn & colors;  // only enable desired colors that have intensity set
     #ifdef DEBUG
         Serial.print(" CSon ");
-        Serial.println(colorOn);
+        Serial.print(quad2cspin[quad]);
+        Serial.print(" coloron ");
+        Serial.println(colorOn, BIN);    
     #endif
         SPI.transfer(colorOn);
         delayMicroseconds(1);
@@ -1960,11 +1965,11 @@ void initBoards(void)
 #ifndef __MKL26Z64__  
   watchdog.reset(); // nice doggy!
 #endif  
-  //  sendCmd(PARALLEL);   // normal mode sends commnds to all at the same time
-  delay(500);          //  allow time for propogatiion and change over
-#ifndef __MKL26Z64__  
-  watchdog.reset(); // nice doggy!
-#endif  
+//  sendCmd(PARALLEL);   // normal mode sends commnds to all at the same time
+//  delay(500);          //  allow time for propogatiion and change over
+// #ifndef __MKL26Z64__  
+//  watchdog.reset(); // nice doggy!
+// #endif  
   sendCmd(SETOFF);     // turn all LEDS off on others
 
   initDACs();          // reset DACs and enable reference
@@ -3070,7 +3075,7 @@ void wdtCmd(int arg_cnt, char **args)
 // Intensity high4 bits 1110iiii     // send highest 4 bits of 12 bit intensity DAC value or panel 3 digital
 // Enumerate command:   111100xx     // enumerate the boards when in series mode. Main sends 0xf1, next panel sees this and sends F2 to next, etc
 // Series Mode:         11110100     // set intraboard comms to serial - needed to do enumeration
-// Parallel Mode:       11110101     // set intraboard comms to parallel - used for all other commands
+// - depracted--- Parallel Mode:       11110101     // set intraboard comms to parallel - used for all other commands
 // color set            11111ddd     // turn colors on and off for all panels (mostly for pulse) 1= on, 0 = off
 
 // MARKER commands (in parallel mode)
@@ -3648,7 +3653,7 @@ void setup()
 
   //  pinMode( boardTypePin, INPUT_PULLUP);
 
-  digitalWrite(DIRpin, HIGH);     // assume series mode
+  digitalWrite(DIRpin, LOW);    // assume paralllel mode for FPGA interface // assume series mode
   digitalWrite(LLpin, HIGH);
   digitalWrite(URpin, HIGH);
   digitalWrite(LRpin, HIGH);
