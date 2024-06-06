@@ -69,8 +69,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define VERSION 20240606
 
 // 20240606 sws
-// - change MARKER from blinking each marker for one second to turning markers on and off 
-//      example: MARKER RG  will turn on red and green and turn off blue
+// - UPDATE - MARKER colors ON or OFF
+//   add On or OFF to turn specific marker colors (and/or digital) on and off withour affecting the others
+//   no arguments will return current on markers
+// -xxx change MARKER from blinking each marker for one second to turning markers on and off 
+//   xxx   example: MARKER RG  will turn on red and green and turn off blue
 
 // 20240430 sws
 // - initial setting of cmdMode PARALLEL not SERIES to easier work with FPGA control 
@@ -2800,28 +2803,35 @@ void stepOrderCmd(int arg_cnt, char **args) // add a step order - 0 resets it
 
 void markerCmd(int arg_cnt, char **args)  //marker test
 {
-   if ( arg_cnt > 1 )
+   if ( arg_cnt > 2 )
    { 
-      if ( strchr(args[1], 'R') )
-        markerOn(RED);
-      else
-        markerOff(RED);
-      if ( strchr(args[1], 'G') )
-        markerOn(GRN);
-      else
-        markerOff(GRN);
-      if ( strchr(args[1], 'B') )
-        markerOn(BLU);
-      else
-        markerOff(BLU);            
+      if( strchr(args[2], 'N') )
+      {
+        if ( strchr(args[1], 'R') )
+          markerOn(RED);
+        if ( strchr(args[1], 'G') )
+          markerOn(GRN);
+        if ( strchr(args[1], 'B') )
+          markerOn(BLU);
+      }
+      else if( strchr(args[2], 'F') )
+      {
+        if ( strchr(args[1], 'R') )
+          markerOff(RED);
+        if ( strchr(args[1], 'G') )
+          markerOff(GRN);
+        if ( strchr(args[1], 'B') )
+          markerOff(BLU);   
+      }
    }
    else
    {
-      markerOff(RED);
-      markerOff(GRN);    
-      markerOff(BLU);           
+      if( markerState[RED]) Serial.print('R');
+      if( markerState[BLU]) Serial.print('B');
+      if( markerState[GRN]) Serial.print('G');
+      if( markerState[DIG]) Serial.print('D');
+      Serial.println();      
    }
-
 }
 
 // ===========================
