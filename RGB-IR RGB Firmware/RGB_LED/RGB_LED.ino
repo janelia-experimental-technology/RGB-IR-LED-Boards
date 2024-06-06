@@ -66,7 +66,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20240430
+#define VERSION 20240606
+
+// 20240606 sws
+// - change MARKER from blinking each marker for one second to turning markers on and off 
+//      example: MARKER RG  will turn on red and green and turn off blue
 
 // 20240430 sws
 // - initial setting of cmdMode PARALLEL not SERIES to easier work with FPGA control 
@@ -2796,68 +2800,28 @@ void stepOrderCmd(int arg_cnt, char **args) // add a step order - 0 resets it
 
 void markerCmd(int arg_cnt, char **args)  //marker test
 {
-  //    Stream *s = cmdGetStream();
-  //    if ( arg_cnt > 1 )
-  //    {  // comes in as %, change to 0-255
-  //       markerIntensity =(uint8_t) (cmdStr2Num(args[1], 10) * 255 / 100);
-  //    }
-  //    s->println((uint32_t)markerIntensity * 100 / 255); // go out as %
+   if ( arg_cnt > 1 )
+   { 
+      if ( strchr(args[1], 'R') )
+        markerOn(RED);
+      else
+        markerOff(RED);
+      if ( strchr(args[1], 'G') )
+        markerOn(GRN);
+      else
+        markerOff(GRN);
+      if ( strchr(args[1], 'B') )
+        markerOn(BLU);
+      else
+        markerOff(BLU);            
+   }
+   else
+   {
+      markerOff(RED);
+      markerOff(GRN);    
+      markerOff(BLU);           
+   }
 
-  //    sendCmd(PARALLEL);  // use alt comands for markers
-  digitalWrite(redPin, HIGH);
-  digitalWrite(LEDpin, HIGH);
-  //    sendCmd( RMARKON);
-  Serial.print("red");
-  for (int i = 0; i < 2; i++)
-  {
-    delay(1000);
-#ifndef __MKL26Z64__    
-    watchdog.reset(); // nice doggy!
-#endif    
-  }
-  digitalWrite(redPin, LOW);
-  digitalWrite(LEDpin, LOW);
-  //    sendCmd(RMARKOFF);
-
-  digitalWrite(grnPin, HIGH);
-  //    sendCmd(GMARKON);
-  Serial.print(" grn");
-  for (int i = 0; i < 2; i++)
-  {
-    delay(1000);
-#ifndef __MKL26Z64__    
-    watchdog.reset(); // nice doggy!
-#endif    
-  }
-  digitalWrite(grnPin, LOW);
-  //    sendCmd(GMARKOFF);
-
-  digitalWrite(bluPin, HIGH);
-  //    sendCmd(BMARKON);
-  Serial.print(" blu");
-  for (int i = 0; i < 2; i++)
-  {
-    delay(1000);
-#ifndef __MKL26Z64__    
-    watchdog.reset(); // nice doggy!
-#endif    
-  }
-
-  digitalWrite(bluPin, LOW);
-  //   sendCmd(BMARKOFF);
-
-  digitalWrite(digitalPin, HIGH);
-  //    sendCmd(BMARKON);
-  Serial.println(" dout");
-  for (int i = 0; i < 2; i++)
-  {
-    delay(1000);
-#ifndef __MKL26Z64__   
-    watchdog.reset(); // nice doggy!
-#endif    
-  }
-
-  digitalWrite(digitalPin, LOW);
 }
 
 // ===========================
