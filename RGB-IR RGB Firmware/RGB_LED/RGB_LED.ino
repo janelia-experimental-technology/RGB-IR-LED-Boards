@@ -2813,6 +2813,8 @@ void markerCmd(int arg_cnt, char **args)  //marker test
           markerOn(GRN);
         if ( strchr(args[1], 'B') )
           markerOn(BLU);
+        if ( strchr(args[1], 'D') )
+          markerOn(DIG);  
       }
       else if( strchr(args[2], 'F') )
       {
@@ -2821,7 +2823,9 @@ void markerCmd(int arg_cnt, char **args)  //marker test
         if ( strchr(args[1], 'G') )
           markerOff(GRN);
         if ( strchr(args[1], 'B') )
-          markerOff(BLU);   
+          markerOff(BLU); 
+        if ( strchr(args[1], 'D') )
+          markerOff(DIG);            
       }
    }
    else
