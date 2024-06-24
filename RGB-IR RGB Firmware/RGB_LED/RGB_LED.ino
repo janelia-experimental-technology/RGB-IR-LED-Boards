@@ -66,7 +66,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20240606
+#define VERSION 20240624
+
+// 20240624 sws
+// - MARKER cmd didn't actually upadte the digital pins if 'D' used
 
 // 20240606 sws
 // - UPDATE - MARKER colors ON or OFF
