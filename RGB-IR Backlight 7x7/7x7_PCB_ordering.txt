@@ -1,0 +1,6 @@
+The boards are available on CircuitHub:
+
+https://circuithub.com/projects/sawtelles/7x7LEDcontroller/revisions/56201/parts
+
+https://circuithub.com/projects/sawtelles/7x7_RGB-IR_Backlight/revisions/56283/parts
+
