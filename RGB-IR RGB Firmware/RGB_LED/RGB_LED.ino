@@ -57,16 +57,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //    f - number of iterations; 0 = continuous
 //    C - color channel ('R', 'G', 'B' and/or 'S' or 'D')
 
-//#define DEBUG   // print out debug info
+#define DEBUG   // print out debug info
 //#define SYNC_PIN_OUT    // if defined, then SYNC pin is set up as an output,else it is a trigger in
 //#define SYNC_ACTIVE_LOW  // marker pin is active low
 //#define EN5to8  // creates 8 'quadrants' on main board - used for training rig for Yoshi - interferes with digital out 
 //#define PWMCONTROL   // use external PWM control to run brightness
 //#define ANALOGCONTROL
+#define SERVOCONTROL  // fro non-daisy chain rigs, can use TX out for servo control
 
 // VERSIONS
 //
-#define VERSION 20240624
+#define VERSION 20240813
+
+// 20240813 sws
+// - add servo control as alternate use of interboard poll TX pin. Can only be used in stand alone application
 
 // 20240624 sws
 // - MARKER cmd didn't actually upadte the digital pins if 'D' used
@@ -331,12 +335,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include <EEPROM.h>
+#ifdef SERVOCONTROL
+#include <PWMServo.h>
+PWMServo rgbServo;
+#endif
 //#include <Filters.h>
 //#include <Filters/MedianFilter.hpp>        // MedianFilter
 
 IntervalTimer pulseTimer;
 IntervalTimer syncTimer;
 IntervalTimer blinkTimer;
+
+
 
 #ifndef __MKL26Z64__
   Watchdog watchdog;
@@ -2147,6 +2157,32 @@ void patternCmd(int arg_cnt, char **args)
   // depracated
 }
 
+// ==========================
+// === S E R V O   C M D ====
+// ==========================
+
+int16_t servoVal = 0;
+
+#ifdef SERVOCONTROL
+void servoCmd(int arg_cnt, char **args)
+{
+  if ( arg_cnt > 1 )
+  {
+      uint16_t tservo = cmdStr2Num(args[1], 10);
+      if( (tservo >= 0) && (tservo <= 720) )
+      {
+        servoVal = tservo;
+        rgbServo.write(servoVal);
+      }      
+  }
+  else
+  {
+    Serial.println(servoVal);
+  }
+
+}
+#endif
+
 // =================================================================
 // ================= E X P E R I M E N T    C M D S  ===============
 // =================================================================
@@ -3093,7 +3129,9 @@ void sendCmd(uint8_t cmd)
     else if(  cmd == 0xf1 ) Serial.println(" D ON");
     else if(  cmd == 0xf5 ) Serial.println(" DMOFF");
   #endif
+#ifndef SERVOCONTROL
   Serial1.write(cmd);
+#endif  
 }
 
 // panels positions change when grouped, but want quads to make sense
@@ -3222,7 +3260,8 @@ void interBoardPoll(void)
         ledsOff(0x0f); // basically a reset - so be sure we start off
 #ifdef DEBUG
         digitalWriteFast(Dout1Pin, HIGH);
-#endif        
+#endif   
+   
         digitalWriteFast( DIRpin, LOW);   // change direction mode
         cmdMode = PARALLEL;
 
@@ -3241,8 +3280,8 @@ void interBoardPoll(void)
         ledsOff(0x0f); // basically a reset - so be sure we start off
 #ifdef DEBUG
         digitalWriteFast(Dout2Pin, HIGH);
-#endif          
-        digitalWriteFast( DIRpin, LOW);   // change direction mode
+#endif        
+        digitalWriteFast( DIRpin, LOW);   // change direction mode     
         cmdMode = PARALLEL;
 #ifdef DEBUG
         s->println("--- I'm board #2");
@@ -3633,8 +3672,11 @@ void setup()
   pinMode (digitalPin, OUTPUT);
 
   //  pinMode( boardTypePin, INPUT_PULLUP);
-
+#ifndef SERVOCONTROL
   digitalWrite(DIRpin, LOW);    // assume paralllel mode for FPGA interface // assume series mode
+#else
+  digitalWrite(DIRpin, HIGH);   // for servo mode, feed 'TX' out to servo pin
+#endif
   digitalWrite(LLpin, HIGH);
   digitalWrite(URpin, HIGH);
   digitalWrite(LRpin, HIGH);
@@ -3670,7 +3712,11 @@ void setup()
   SPI.begin();
 
   Serial.begin(19200);   // USB comms
+#ifndef SERVOCONTROL 
   Serial1.begin(250000); // inter board comms
+#else  
+  rgbServo.attach(1);  
+#endif
   
   ledsOff(0x0F);   // quadrants off
 
@@ -3725,6 +3771,9 @@ void setup()
   cmdAdd("STATE", stateCmd); // return state machine status
   cmdAdd("ENABLE", enableCmd); // enable quadrants
   cmdAdd("SYNCON", SyncOnCmd); // start sync output
+  #ifdef SERVOCONTROL
+  cmdAdd("SERVO", servoCmd);
+  #endif
 
 
   //    Serial2.begin(19200);  // modular board comms
@@ -3830,7 +3879,10 @@ void loop()
 #endif
 
   cmdPoll();
+
+#ifndef SERVOCONTROL
   interBoardPoll();
+#endif
   
   for( int rgb = 0; rgb < 4; rgb++ )
   {
