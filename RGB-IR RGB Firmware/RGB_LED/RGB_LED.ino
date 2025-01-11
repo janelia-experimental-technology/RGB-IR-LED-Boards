@@ -73,7 +73,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // - add servo control as alternate use of interboard poll TX pin. Can only be used in stand alone application
 
 // 20240624 sws
-// - MARKER cmd didn't actually upadte the digital pins if 'D' used
+// - MARKER cmd didn't actually update the digital pins if 'D' used
 
 // 20240606 sws
 // - UPDATE - MARKER colors ON or OFF
@@ -3306,7 +3306,7 @@ void interBoardPoll(void)
     // ======= SERIES =======
     else if ( cmd == SERIES)
     {
-      digitalWriteFast( DIRpin, HIGH);
+      digitalWriteFast( DIRpin, HIGH); // daisy chain serial connetions so we can enumerate the boards
       cmdMode = SERIES;
 #ifdef DEBUG
       s->print(" -> serial ");

@@ -8,7 +8,7 @@
 </settings>
 <grid distance="5" unitdist="mil" unit="mil" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="12" fill="1" visible="yes" active="yes"/>
+<layer number="1" name="Top" color="8" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
 <layer number="3" name="Route3" color="4" fill="6" visible="no" active="no"/>
 <layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
@@ -23,16 +23,16 @@
 <layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
 <layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
 <layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
-<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
-<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
-<layer number="19" name="Unrouted" color="10" fill="1" visible="yes" active="yes"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="yes"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="no" active="yes"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="no" active="yes"/>
+<layer number="19" name="Unrouted" color="10" fill="1" visible="no" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="no" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="25" name="tNames" color="15" fill="1" visible="no" active="yes"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
+<layer number="25" name="tNames" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
@@ -809,20 +809,6 @@
 <rectangle x1="119.8626" y1="1.905" x2="123.9266" y2="119.7864" layer="121"/>
 <rectangle x1="135.1026" y1="2.7178" x2="139.1666" y2="120.5992" layer="121"/>
 <rectangle x1="150.622" y1="2.9972" x2="152.4" y2="121.5644" layer="121"/>
-<wire x1="-8.509" y1="85.217" x2="164.338" y2="85.217" width="9.652" layer="151"/>
-<wire x1="164.338" y1="85.217" x2="164.465" y2="85.344" width="9.652" layer="151"/>
-<wire x1="-10.668" y1="67.183" x2="165.227" y2="67.183" width="9.652" layer="151"/>
-<wire x1="-13.97" y1="49.149" x2="165.227" y2="49.149" width="9.652" layer="151"/>
-<wire x1="-13.97" y1="103.251" x2="166.37" y2="103.251" width="9.652" layer="151"/>
-<wire x1="166.37" y1="103.251" x2="166.497" y2="103.378" width="9.652" layer="151"/>
-<wire x1="-13.97" y1="121.285" x2="165.862" y2="121.285" width="9.652" layer="151"/>
-<wire x1="165.862" y1="121.285" x2="166.116" y2="121.539" width="9.652" layer="151"/>
-<wire x1="-16.256" y1="31.115" x2="171.577" y2="31.115" width="9.652" layer="151"/>
-<wire x1="171.577" y1="31.115" x2="171.704" y2="30.988" width="9.652" layer="151"/>
-<wire x1="0" y1="-12.7" x2="152.4" y2="-12.7" width="0.254" layer="151"/>
-<wire x1="152.4" y1="-12.7" x2="152.4" y2="165.1" width="0.254" layer="151"/>
-<wire x1="152.4" y1="165.1" x2="0" y2="165.1" width="0.254" layer="151"/>
-<wire x1="0" y1="165.1" x2="0" y2="-12.7" width="0.254" layer="151"/>
 <wire x1="91.313" y1="60.96" x2="91.313" y2="120.523" width="1.524" layer="160"/>
 <wire x1="91.44" y1="60.96" x2="91.44" y2="1.016" width="1.524" layer="160"/>
 <wire x1="151.13" y1="119.507" x2="151.13" y2="1.27" width="2.54" layer="160"/>
@@ -831,7 +817,6 @@
 <wire x1="31.75" y1="120.65" x2="31.75" y2="1.27" width="2.54" layer="160"/>
 <wire x1="32.131" y1="60.96" x2="150.622" y2="60.96" width="2.54" layer="160"/>
 <circle x="91.44" y="60.96" radius="4.064" width="1.524" layer="160"/>
-<circle x="-3.81" y="-3.81" radius="6.35" width="0.002540625" layer="160"/>
 <rectangle x1="94.742" y1="58.4454" x2="152.3746" y2="63.627" layer="121"/>
 <rectangle x1="89.6112" y1="2.159" x2="93.6752" y2="57.658" layer="121"/>
 <circle x="91.44" y="60.96" radius="3.81" width="1.27" layer="121"/>
@@ -915,22 +900,8 @@
 <circle x="129.54" y="124.46" radius="4.826" width="0.4064" layer="254"/>
 <circle x="78.74" y="124.46" radius="4.826" width="0.4064" layer="254"/>
 <circle x="27.94" y="124.46" radius="4.826" width="0.4064" layer="254"/>
-<circle x="312.42" y="78.74" radius="4.826" width="0.4064" layer="254"/>
-<circle x="287.02" y="78.74" radius="4.826" width="0.4064" layer="254"/>
-<circle x="261.62" y="78.74" radius="4.826" width="0.4064" layer="254"/>
 <circle x="53.34" y="99.06" radius="4.826" width="0.4064" layer="254"/>
 <circle x="104.14" y="99.06" radius="4.826" width="0.4064" layer="254"/>
-<circle x="322.58" y="134.62" radius="4.826" width="0.4064" layer="254"/>
-<circle x="297.18" y="134.62" radius="4.826" width="0.4064" layer="254"/>
-<circle x="271.78" y="134.62" radius="4.826" width="0.4064" layer="254"/>
-<circle x="246.38" y="134.62" radius="4.826" width="0.4064" layer="254"/>
-<circle x="220.98" y="134.62" radius="4.826" width="0.4064" layer="254"/>
-<wire x1="130.81" y1="-26.67" x2="-21.59" y2="-26.67" width="0.254" layer="151"/>
-<circle x="31.75" y="-92.71" radius="4.826" width="0.4064" layer="254"/>
-<wire x1="130.81" y1="-97.79" x2="-21.59" y2="-97.79" width="0.254" layer="151"/>
-<circle x="31.75" y="-163.83" radius="4.826" width="0.4064" layer="254"/>
-<wire x1="130.81" y1="-168.91" x2="-21.59" y2="-168.91" width="0.254" layer="151"/>
-<circle x="31.75" y="-234.95" radius="4.826" width="0.4064" layer="254"/>
 </plain>
 <libraries>
 <library name="STEVES_BU">
