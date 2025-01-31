@@ -67,7 +67,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20240813
+#define VERSION 20250131
+
+// 20250131 sws
+// add enumerate cmd. had to set parallel mode in RESET for FPGA, but regular RGB needs Series mode, souse ENUMERATE instaeda of RESET there
 
 // 20240813 sws
 // - add servo control as alternate use of interboard poll TX pin. Can only be used in stand alone application
@@ -2014,7 +2017,10 @@ void initBoards(void)
   IRwasOff = false;  // reset IR set off flag
 }
 
+// ==========================
 // ---  R E S E T   C M D ---
+// ==========================
+
 void resetCmd(int arg_cnt, char **args)
 {
   #ifdef DEBUG
@@ -2022,6 +2028,20 @@ void resetCmd(int arg_cnt, char **args)
   #endif
   initBoards();
 }
+
+// ==================================
+// ---  E N U M E R A T E   C M D ---
+// ==================================
+
+void enumerateCmd(int arg_cnt, char **args)
+{
+  #ifdef DEBUG
+  Serial.println(" enumerate");
+  #endif
+  digitalWrite(DIRpin, HIGH);  // series mode
+  initBoards();
+}
+
 
 // ==========================
 // === R E A D   R G B   ====
@@ -3771,6 +3791,7 @@ void setup()
   cmdAdd("STATE", stateCmd); // return state machine status
   cmdAdd("ENABLE", enableCmd); // enable quadrants
   cmdAdd("SYNCON", SyncOnCmd); // start sync output
+  cmdAdd("ENUMERATE", enumerateCmd); // instaed of reset for RGB boards
   #ifdef SERVOCONTROL
   cmdAdd("SERVO", servoCmd);
   #endif

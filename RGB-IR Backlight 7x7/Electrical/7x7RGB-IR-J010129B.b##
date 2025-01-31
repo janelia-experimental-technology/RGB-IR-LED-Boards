@@ -1131,30 +1131,26 @@
 <hole x="0" y="0" drill="3.048"/>
 <circle x="0" y="0" radius="2.413" width="0.127" layer="21"/>
 </package>
-<package name="2X3_PLUG">
-<wire x1="-3.4" y1="5.19" x2="3.4" y2="5.19" width="0.2032" layer="21"/>
-<wire x1="3.4" y1="5.19" x2="3.4" y2="-5.19" width="0.2032" layer="21"/>
-<wire x1="-3.4" y1="-5.19" x2="3.4" y2="-5.19" width="0.2032" layer="21"/>
-<wire x1="-3.4" y1="5.19" x2="-3.4" y2="2.2" width="0.2032" layer="21"/>
-<wire x1="-3.4" y1="-5.19" x2="-3.4" y2="-2.2" width="0.2032" layer="21"/>
-<pad name="1" x="-1.397" y="-2.54" drill="1.016" diameter="1.651" rot="R90"/>
-<pad name="2" x="1.397" y="-2.54" drill="1.016" diameter="1.651" rot="R90"/>
-<pad name="3" x="-1.397" y="0" drill="1.016" diameter="1.651" rot="R90"/>
-<pad name="4" x="1.397" y="0" drill="1.016" diameter="1.651" rot="R90"/>
-<pad name="5" x="-1.397" y="2.54" drill="1.016" diameter="1.651" rot="R90"/>
-<pad name="6" x="1.397" y="2.54" drill="1.016" diameter="1.651" rot="R90"/>
-<text x="-2.921" y="9.144" size="1.016" layer="27" font="vector" ratio="12">&gt;VALUE</text>
-<text x="-2.921" y="10.668" size="1.016" layer="25" ratio="12">&gt;NAME</text>
-<rectangle x1="-1.524" y1="-2.794" x2="-1.016" y2="-2.286" layer="51" rot="R90"/>
-<rectangle x1="1.016" y1="-2.794" x2="1.524" y2="-2.286" layer="51" rot="R90"/>
-<rectangle x1="1.016" y1="-0.254" x2="1.524" y2="0.254" layer="51" rot="R90"/>
-<rectangle x1="-1.524" y1="-0.254" x2="-1.016" y2="0.254" layer="51" rot="R90"/>
-<rectangle x1="1.016" y1="2.286" x2="1.524" y2="2.794" layer="51" rot="R90"/>
-<rectangle x1="-1.524" y1="2.286" x2="-1.016" y2="2.794" layer="51" rot="R90"/>
-<wire x1="-3.429" y1="2.159" x2="-5.461" y2="2.159" width="0.127" layer="21"/>
-<wire x1="-5.461" y1="2.159" x2="-5.461" y2="-2.159" width="0.127" layer="21"/>
-<wire x1="-5.461" y1="-2.159" x2="-3.429" y2="-2.159" width="0.127" layer="21"/>
-<wire x1="-3.81" y1="-2.54" x2="-3.81" y2="-3.81" width="0.127" layer="21"/>
+<package name="2X3_SHROUDED_SMT">
+<wire x1="-6.585" y1="3.175" x2="-6.585" y2="1.905" width="0.2032" layer="21"/>
+<wire x1="4.5" y1="7.62" x2="4.5" y2="-7.62" width="0.2032" layer="21"/>
+<wire x1="-4.5" y1="-7.62" x2="-4.5" y2="-2.2" width="0.2032" layer="21"/>
+<wire x1="-4.5" y1="-2.2" x2="-4.5" y2="2.2" width="0.2032" layer="21"/>
+<wire x1="-4.5" y1="2.2" x2="-4.5" y2="7.62" width="0.2032" layer="21"/>
+<wire x1="-4.5" y1="7.62" x2="4.4" y2="7.62" width="0.2032" layer="21"/>
+<wire x1="4.5" y1="-7.62" x2="-4.5" y2="-7.62" width="0.2032" layer="21"/>
+<wire x1="-4.5" y1="2.2" x2="-3" y2="2.2" width="0.2032" layer="21"/>
+<wire x1="-3" y1="2.2" x2="-3" y2="-2.2" width="0.2032" layer="21"/>
+<wire x1="-3" y1="-2.2" x2="-4.5" y2="-2.2" width="0.2032" layer="21"/>
+<smd name="1" x="-3.429" y="2.54" dx="5.08" dy="1.27" layer="1" roundness="50"/>
+<smd name="2" x="3.429" y="2.54" dx="5.08" dy="1.27" layer="1" roundness="50"/>
+<smd name="3" x="-3.429" y="0" dx="5.08" dy="1.27" layer="1" roundness="50"/>
+<smd name="4" x="3.429" y="0" dx="5.08" dy="1.27" layer="1" roundness="50"/>
+<smd name="5" x="-3.429" y="-2.54" dx="5.08" dy="1.27" layer="1" roundness="50"/>
+<smd name="6" x="3.429" y="-2.54" dx="5.08" dy="1.27" layer="1" roundness="50"/>
+<text x="-2.921" y="7.874" size="1.27" layer="27" font="vector">&gt;VALUE</text>
+<text x="-2.921" y="9.398" size="1.27" layer="25" font="vector">&gt;NAME</text>
+<text x="-8.128" y="1.905" size="1.016" layer="21">1</text>
 </package>
 </packages>
 </library>
@@ -4074,7 +4070,7 @@ design rules under a new name.</description>
 <attribute name="VALUE" x="-102.799" y="-46.263" size="1.27" layer="27" rot="R270"/>
 </element>
 <element name="C23" library="STEVES_BU" package="1210S" value="10@50" x="-91.313" y="-29.464"/>
-<element name="P4" library="STEVES_BU" package="2X3_PLUG" value="CON2X3" x="-124.968" y="-11.303" smashed="yes" rot="R270">
+<element name="P4" library="STEVES_BU" package="2X3_SHROUDED_SMT" value="CON2X3" x="-124.968" y="-11.303" smashed="yes" rot="R270">
 <attribute name="VALUE" x="-117.094" y="-8.382" size="1.27" layer="27" font="vector" rot="R270"/>
 <attribute name="NAME" x="-116.84" y="-9.779" size="1.27" layer="25" font="vector"/>
 </element>
@@ -9415,7 +9411,7 @@ design rules under a new name.</description>
 <wire x1="-110.49" y1="43.053" x2="-108.687" y2="43.053" width="1.27" layer="1"/>
 <wire x1="-108.687" y1="43.053" x2="-108.613575" y2="43.024425" width="0.6096" layer="1"/>
 <wire x1="-91.821" y1="47.261" x2="-91.821" y2="52.561" width="0" layer="19" extent="1-1"/>
-<wire x1="-108.613575" y1="43.024425" x2="-108.613575" y2="46.072425" width="0" layer="19" extent="1-1"/>
+<wire x1="-108.687" y1="43.053" x2="-108.613575" y2="46.072425" width="0" layer="19" extent="1-1"/>
 <wire x1="-91.821" y1="37.101" x2="-91.821" y2="42.401" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="IGND1">
