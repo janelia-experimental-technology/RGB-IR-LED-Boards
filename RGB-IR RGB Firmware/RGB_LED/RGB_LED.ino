@@ -2054,7 +2054,7 @@ void initGainOffsetCmd(int arg_cnt, char **args)
       EEPROM.put(OFFSET_ADR + i , offsetVal);
     }  
     EEPROM.write(EE_INITED, 0x55);
-    #ifdef DEBUG
+    
     for ( int clr = 0; clr < 4; clr++)
     {
       for ( int quad = 0; quad < 4; quad++ )
@@ -2070,7 +2070,6 @@ void initGainOffsetCmd(int arg_cnt, char **args)
       } 
       Serial.println(); 
     } 
-    #endif
 }
 
 // ==================================
