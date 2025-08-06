@@ -57,7 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //    f - number of iterations; 0 = continuous
 //    C - color channel ('R', 'G', 'B' and/or 'S' or 'D')
 
-//#define DEBUG   // print out debug info
+#define DEBUG   // print out debug info
 //#define SYNC_PIN_OUT    // if defined, then SYNC pin is set up as an output,else it is a trigger in
 //#define SYNC_ACTIVE_LOW  // marker pin is active low
 //#define EN5to8  // creates 8 'quadrants' on main board - used for training rig for Yoshi - interferes with digital out 
@@ -67,7 +67,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20250131
+#define VERSION 20250805
+
+// 20250805 sws
+// - redo offset and gain - offset now 8 bits not 16, use EEPROM get and put
+// - add INITGO command to allwo reinitializing gain and offset values 
+
 
 // 20250131 sws
 // add enumerate cmd. had to set parallel mode in RESET for FPGA, but regular RGB needs Series mode, souse ENUMERATE instaeda of RESET there
@@ -555,7 +560,7 @@ float LEDgain[4][4] =
   1.0, 1.0, 1.0, 1.0   // IR
 };
 
-uint16_t LEDoffset[4][4] =
+uint8_t LEDoffset[4][4] =
 {
   0, 0, 0, 0,  // blue
   0, 0, 0, 0,  // green
@@ -1550,8 +1555,9 @@ void gainCmd(int arg_cnt, char **args)
       {
         //    s->println( clr * 16 + idx * 4);
         //    s->println( tgain);
-        writeFloat( clr * 16 + idx * 4, tgain);  // 4 bytes/float, 4 quads per color
-        LEDgain[clr][idx] = tgain;
+        //writeFloat( clr * 16 + idx * 4, tgain);  // 4 bytes/float, 4 quads per color
+        EEPROM.put(clr * 16 + idx * 4, tgain);
+        EEPROM.get(clr * 16 + idx * 4, LEDgain[clr][idx]); // tgain;
         //    s->println( LEDgain[clr][idx] );
       }
       else
@@ -1613,13 +1619,17 @@ void offsetCmd(int arg_cnt, char **args)
     int idx = cmdStr2Num(args[2], 10);
     if ( (idx >= 0) && (idx <= 3) )
     {
-      uint16_t toff = cmdStr2Num(args[3], 10);
+      uint8_t toff = (uint8_t)cmdStr2Num(args[3], 10);
       if ( (toff >= 0) && (toff <= 20) )
       {
         //    s->println( clr * 16 + idx * 4);
         //    s->println( tgain);
-        writeUint( OFFSET_ADR + clr * 16 + idx * 4, toff);  // 4 bytes/float, 4 quads per color
-        LEDoffset[clr][idx] = toff;
+        //writeUint( OFFSET_ADR + clr * 16 + idx * 4, toff);  // 4 bytes/float, 4 quads per color
+        EEPROM.put( OFFSET_ADR + clr * 4 + idx, toff);
+        //LEDoffset[clr][idx] = toff;
+        uint8_t getval; 
+        EEPROM.get(OFFSET_ADR + clr * 4 + idx, getval);
+        LEDoffset[clr][idx] = getval;
         //    s->println( LEDgain[clr][idx] );
       }
       else
@@ -1636,7 +1646,7 @@ void offsetCmd(int arg_cnt, char **args)
 
 
   }
-  else  // show gains
+  else  // show offsets
   {
     for ( int color = 0; color < 4; color++)
     {
@@ -2027,6 +2037,40 @@ void resetCmd(int arg_cnt, char **args)
   Serial.println("     resetCmd");
   #endif
   initBoards();
+}
+
+// ==========================
+// ---  INITGO ---
+// ==========================
+void initGainOffsetCmd(int arg_cnt, char **args)
+{
+    float gainVal = 1.0;
+    uint8_t offsetVal = 0;
+    for ( int i = 0; i < 16; i++ )
+    {
+      //writeFloat( i * 4, 1.0);
+      //writeUint( OFFSET_ADR + i * 2, 0);
+      EEPROM.put(i * 4, gainVal);
+      EEPROM.put(OFFSET_ADR + i , offsetVal);
+    }  
+    EEPROM.write(EE_INITED, 0x55);
+    #ifdef DEBUG
+    for ( int clr = 0; clr < 4; clr++)
+    {
+      for ( int quad = 0; quad < 4; quad++ )
+      {
+        EEPROM.get(clr * 16 +  quad * 4, LEDgain[clr][quad]);
+        EEPROM.get(OFFSET_ADR + clr *4 + quad, LEDoffset[clr][quad]);
+        #ifdef DEBUG 
+           Serial.print(LEDgain[clr][quad]);
+           Serial.print(',');
+           Serial.print(LEDoffset[clr][quad]); 
+           Serial.print(' ');
+        #endif   
+      } 
+      Serial.println(); 
+    } 
+    #endif
 }
 
 // ==================================
@@ -3795,6 +3839,7 @@ void setup()
   #ifdef SERVOCONTROL
   cmdAdd("SERVO", servoCmd);
   #endif
+  cmdAdd("INITGO", initGainOffsetCmd);
 
 
   //    Serial2.begin(19200);  // modular board comms
@@ -3837,10 +3882,15 @@ void setup()
 
   if ( EEPROM.read(EE_INITED) != 0x55 )
   {
+    #ifdef DEBUG 
+       Serial.println("init EEPROM");
+    #endif   
     for ( int i = 0; i < 16; i++ )
     {
-      writeFloat( i * 4, 1.0);
-      writeUint( OFFSET_ADR + i * 2, 0);
+      //writeFloat( i * 4, 1.0);
+      //writeUint( OFFSET_ADR + i * 2, 0);
+      EEPROM.put(i * 4, 1.0);
+      EEPROM.put(OFFSET_ADR + i , 0);
     }  
     EEPROM.write(EE_INITED, 0x55);
   }
@@ -3848,20 +3898,19 @@ void setup()
   {
     for ( int quad = 0; quad < 4; quad++ )
     {
-      LEDgain[clr][quad] = readFloat(clr * 16 +  quad * 4);
-      LEDoffset[clr][quad] =  readUint( OFFSET_ADR + clr * 8 + quad * 2);
+      //LEDgain[clr][quad] = readFloat(clr * 16 +  quad * 4);
+      //LEDoffset[clr][quad] =  readUint( OFFSET_ADR + clr * 8 + quad * 2);
+      EEPROM.get(clr * 16 +  quad * 4, LEDgain[clr][quad]);
+      EEPROM.get(OFFSET_ADR + clr *4 + quad, LEDoffset[clr][quad]);
+      #ifdef DEBUG 
+         Serial.print(LEDoffset[clr][quad]); 
+         Serial.print(' ');
+      #endif   
     }  
+    #ifdef DEBUG
+       Serial.println();
+    #endif   
   }
-  
-//
-//  Serial.println(OFFSET_ADR);
-//
-//  for( int i = 0; i < 100; i++ )
-//  {
-//     Serial.print(i);
-//     Serial.print(" ");
-//     Serial.println(EEPROM.read(i));
-//  }  
 
  
 #ifdef PWMCONTROL
