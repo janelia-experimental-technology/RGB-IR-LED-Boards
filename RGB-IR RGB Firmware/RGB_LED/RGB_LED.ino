@@ -63,7 +63,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define EN5to8  // creates 8 'quadrants' on main board - used for training rig for Yoshi - interferes with digital out 
 //#define PWMCONTROL   // use external PWM control to run brightness
 //#define ANALOGCONTROL
-//#define SERVOCONTROL  // fro non-daisy chain rigs, can use TX out for servo control
+//#define SERVOCONTROL  // for non-daisy chain rigs, can use TX out for servo control
 
 // VERSIONS
 //
