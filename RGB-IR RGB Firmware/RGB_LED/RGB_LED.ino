@@ -57,7 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //    f - number of iterations; 0 = continuous
 //    C - color channel ('R', 'G', 'B' and/or 'S' or 'D')
 
-#define DEBUG   // print out debug info
+//#define DEBUG   // print out debug info
 //#define SYNC_PIN_OUT    // if defined, then SYNC pin is set up as an output,else it is a trigger in
 //#define SYNC_ACTIVE_LOW  // marker pin is active low
 //#define EN5to8  // creates 8 'quadrants' on main board - used for training rig for Yoshi - interferes with digital out 
