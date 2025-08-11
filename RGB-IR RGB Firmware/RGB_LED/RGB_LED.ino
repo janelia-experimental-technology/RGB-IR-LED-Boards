@@ -67,7 +67,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20250805
+#define VERSION 20250811
+
+// 20250811 sws
+// -  don't add offset and gain to a zero DAC value, as it may turn on an LED that should be off and 
+//     also turn the marker on 
 
 // 20250805 sws
 // - redo offset and gain - offset now 8 bits not 16, use EEPROM get and put
@@ -1018,7 +1022,11 @@ void setIntensity(uint8_t color, uint8_t quadrant, uint16_t DACvalue)
   
   // add gain and offset
   if ( quadrant < 4 )
-    DACvalue = int( (float)DACvalue * LEDgain[color][quadrant] + LEDoffset[color][quadrant]);
+  {
+    if( DACvalue > 0 ) // don't add offset and gain to a zero value 
+      DACvalue = int( (float)DACvalue * LEDgain[color][quadrant] + LEDoffset[color][quadrant]);
+   
+  }  
   if ( color == IR)
   {
     if ( DACvalue > MAXIRDAC ) DACvalue = MAXIRDAC;
