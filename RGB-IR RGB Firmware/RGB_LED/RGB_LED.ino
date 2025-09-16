@@ -67,7 +67,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20250811
+#define VERSION 20250910
+
+// 20250910 sws
+// - clean up spacing in parameter listing in helpCmd
 
 // 20250811 sws
 // -  don't add offset and gain to a zero DAC value, as it may turn on an LED that should be off and 
@@ -1935,56 +1938,56 @@ void helpCmd(int arg_cnt, char **args)
 #ifdef DEBUG
   s->println("Debug ON");
 #endif
-  s->println("\r\nPARAMETER      BLU  GRN  RED DIG");
+  s->println("\r\nPARAMETER\tBLU\tGRN\tRED\tDIG");
 
-  s->print("intensity   %: ");
+  s->print("intensity DAC: ");
   for ( int rgb = 0; rgb < 4; rgb++ )
   {
     s->print(intensityPC[rgb]);
-    s->print(" ");
+    s->print('\t');
   }
 
   s->print("\npulse on   ms: ");
   for ( int rgb = 0; rgb < 4; rgb++ )
   {
     s->print(pulse_on_msec[rgb]);
-    s->print(" ");
+    s->print('\t');
   }
   s->print("\nperiod     ms: ");
   for ( int rgb = 0; rgb < 4; rgb++ )
   {
     s->print(pulse_off_msec[rgb] + pulse_on_msec[rgb]);
-    s->print(" ");
+    s->print('\t');
   }
   s->print("\npulse   count: ");
   for ( int rgb = 0; rgb < 4; rgb++ )
   {
     s->print(pulse_count[rgb]);
-    s->print(" ");
+    s->print('\t');
   }
   s->print("\noff time   ms: ");
   for ( int rgb = 0; rgb < 4; rgb++ )
   {
     s->print(off_time_msec[rgb]);
-    s->print(" ");
+    s->print('\t');
   }
   s->print("\nwait time sec: ");
   for ( int rgb = 0; rgb < 4; rgb++ )
   {
     s->print(wait_sec[rgb]);
-    s->print(" ");
+    s->print('\t');
   }
   s->print("\nwait time msec: ");
   for ( int rgb = 0; rgb < 4; rgb++ )
   {
     s->print(wait_msec[rgb]);
-    s->print(" ");
+    s->print('\t');
   }
   s->print("\nnumber loops : ");
   for ( int rgb = 0; rgb < 4; rgb++ )
   {
     s->print(iteration_loops[rgb]);
-    s->print(" ");
+    s->print('\t');
   }
   s->println(' ');
 }
