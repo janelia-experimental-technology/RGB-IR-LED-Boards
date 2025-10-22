@@ -1019,7 +1019,6 @@ void checkInit(void)
 
 void setIntensity(uint8_t color, uint8_t quadrant, uint16_t DACvalue)
 {
-
   uint8_t cspin = quad2cspin[quadrant];
   uint8_t colorBit = color2DAC[color];
   
@@ -1136,13 +1135,13 @@ void newIntensity( float percent, uint8_t color, uint8_t panel, uint8_t quadrant
 #ifdef DEBUG
   Serial.println("--- newIntensity");
   Serial.print(colors[color]);
-  Serial.print(" Intensity %");
+  Serial.print(" ");
   Serial.print(percent);
-  Serial.print(", pan:");
+  Serial.print("%, pan:");  
   Serial.print(panel);
   Serial.print(", quad: 0b");
   Serial.print(quadrant, BIN);
-  Serial.print(", DAC");
+  Serial.print(", DAC:");
   Serial.println(DACval);
   Serial.print("onQuads= 0b");
   Serial.println(onQuadrants, BIN);
@@ -1173,6 +1172,10 @@ void newIntensity( float percent, uint8_t color, uint8_t panel, uint8_t quadrant
       }
       if ( panel <= 1 ) // host panel or all - so do local update
       {
+
+  Serial.print("DAC:");
+  Serial.println(DACval); 
+      
         setIntensity(color, quad, DACval);
       }
     }
