@@ -67,7 +67,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20250910
+#define VERSION 20260216
+
+// 20260216 sws
+// - fix EEPROM initialization
 
 // 20250910 sws
 // - clean up spacing in parameter listing in helpCmd
@@ -594,60 +597,6 @@ SPISettings DOUT(1000000, MSBFIRST, SPI_MODE0);
 uint16_t blinkTime = 0;
 #define MAXBLINKTIME 32000
 
-float readFloat(unsigned int addr)
-{
-  union
-  {
-    byte b[4];
-    float f;
-  }  data;
-  for (int i = 0; i < 4; i++)
-  {
-    data.b[i] = EEPROM.read(addr + i);
-  }
-  return data.f;
-}
-
-void writeFloat(unsigned int addr, float x)
-{
-  union
-  {
-    byte b[4];
-    float f;
-  } data;
-  data.f = x;
-  for (int i = 0; i < 4; i++)
-  {
-    EEPROM.write(addr + i, data.b[i]);
-  }
-}
-
-uint16_t readUint(unsigned int addr)
-{
-  union
-  {
-    byte b[2];
-    uint16_t u;
-  }  data;
-
-  data.b[0] = EEPROM.read( addr);
-  data.b[1] = EEPROM.read( addr+1);
-  return data.u;
-}
-
-void writeUint(unsigned int addr, uint16_t x)
-{
-  union
-  {
-    byte b[2];
-    uint16_t u;
-  } data;
-  data.u = x;
-  EEPROM.write( addr, data.b[0]);
-  EEPROM.write( addr+1, data.b[1]);
-}
-
-
 // =========== S E R I A L    C O M M A N D S =========
 
 #define SETOFF      0x00
@@ -1025,7 +974,7 @@ void setIntensity(uint8_t color, uint8_t quadrant, uint16_t DACvalue)
   // add gain and offset
   if ( quadrant < 4 )
   {
-    if( DACvalue > 0 ) // don't add offset and gain to a zero value 
+    if( DACvalue > 0 ) // don't add offset a???nd gain to a zero value 
       DACvalue = int( (float)DACvalue * LEDgain[color][quadrant] + LEDoffset[color][quadrant]);
    
   }  
@@ -1173,8 +1122,8 @@ void newIntensity( float percent, uint8_t color, uint8_t panel, uint8_t quadrant
       if ( panel <= 1 ) // host panel or all - so do local update
       {
 
-  Serial.print("DAC:");
-  Serial.println(DACval); 
+//  Serial.print("DAC:");
+//  Serial.println(DACval); 
       
         setIntensity(color, quad, DACval);
       }
@@ -2056,8 +2005,12 @@ void resetCmd(int arg_cnt, char **args)
 // ==========================
 // ---  INITGO ---
 // ==========================
-void initGainOffsetCmd(int arg_cnt, char **args)
+
+void initGainOffset(void)
 {
+#ifdef DEBUG  
+  Serial.println("====Init EEPROM===");
+#endif
     float gainVal = 1.0;
     uint8_t offsetVal = 0;
     for ( int i = 0; i < 16; i++ )
@@ -2067,7 +2020,8 @@ void initGainOffsetCmd(int arg_cnt, char **args)
       EEPROM.put(i * 4, gainVal);
       EEPROM.put(OFFSET_ADR + i , offsetVal);
     }  
-    EEPROM.write(EE_INITED, 0x55);
+    uint8_t inited = 0x55;
+    EEPROM.put(EE_INITED, inited);
     
     for ( int clr = 0; clr < 4; clr++)
     {
@@ -2084,6 +2038,12 @@ void initGainOffsetCmd(int arg_cnt, char **args)
       } 
       Serial.println(); 
     } 
+  
+}
+
+void initGainOffsetCmd(int arg_cnt, char **args)
+{
+  initGainOffset();
 }
 
 // ==================================
@@ -3794,6 +3754,10 @@ void setup()
 #else  
   rgbServo.attach(1);  
 #endif
+
+#ifdef DEBUG
+  Serial.println("DEBUG mode");
+#endif  
   
   ledsOff(0x0F);   // quadrants off
 
@@ -3892,39 +3856,10 @@ void setup()
   }
 
   // if gains not initialized, then do it
-
-  if ( EEPROM.read(EE_INITED) != 0x55 )
-  {
-    #ifdef DEBUG 
-       Serial.println("init EEPROM");
-    #endif   
-    for ( int i = 0; i < 16; i++ )
-    {
-      //writeFloat( i * 4, 1.0);
-      //writeUint( OFFSET_ADR + i * 2, 0);
-      EEPROM.put(i * 4, 1.0);
-      EEPROM.put(OFFSET_ADR + i , 0);
-    }  
-    EEPROM.write(EE_INITED, 0x55);
-  }
-  for ( int clr = 0; clr < 4; clr++)
-  {
-    for ( int quad = 0; quad < 4; quad++ )
-    {
-      //LEDgain[clr][quad] = readFloat(clr * 16 +  quad * 4);
-      //LEDoffset[clr][quad] =  readUint( OFFSET_ADR + clr * 8 + quad * 2);
-      EEPROM.get(clr * 16 +  quad * 4, LEDgain[clr][quad]);
-      EEPROM.get(OFFSET_ADR + clr *4 + quad, LEDoffset[clr][quad]);
-      #ifdef DEBUG 
-         Serial.print(LEDoffset[clr][quad]); 
-         Serial.print(' ');
-      #endif   
-    }  
-    #ifdef DEBUG
-       Serial.println();
-    #endif   
-  }
-
+  uint8_t inited;
+  EEPROM.get(EE_INITED, inited);
+  if( inited != 0x55 )
+     initGainOffset(); 
  
 #ifdef PWMCONTROL
   onQuadrants = 0xff;
