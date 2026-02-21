@@ -67,7 +67,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20260216
+#define VERSION 20260220
+
+// 20260220 sws
+// - was not loading gains and offsets at boot - make it a separate routine
 
 // 20260216 sws
 // - fix EEPROM initialization
@@ -1593,7 +1596,7 @@ void offsetCmd(int arg_cnt, char **args)
         uint8_t getval; 
         EEPROM.get(OFFSET_ADR + clr * 4 + idx, getval);
         LEDoffset[clr][idx] = getval;
-        //    s->println( LEDgain[clr][idx] );
+       // s->println( LEDoffset[clr][idx] );
       }
       else
       {
@@ -1944,6 +1947,32 @@ void helpCmd(int arg_cnt, char **args)
   s->println(' ');
 }
 
+// ==========================
+// ---  L O A D  G A I N   O F F S E T ---
+// =====
+
+void loadGainOffset()
+{
+
+    for ( int clr = 0; clr < 4; clr++)
+    {
+      for ( int quad = 0; quad < 4; quad++ )
+      {
+        EEPROM.get(clr * 16 +  quad * 4, LEDgain[clr][quad]);
+        EEPROM.get(OFFSET_ADR + clr *4 + quad, LEDoffset[clr][quad]);
+        #ifdef DEBUG 
+           Serial.print(LEDgain[clr][quad]);
+           Serial.print(',');
+           Serial.print(LEDoffset[clr][quad]); 
+           Serial.print(' ');
+        #endif   
+      } 
+#ifdef DEBUG       
+      Serial.println(); 
+#endif      
+    } 
+}
+
 // ==============================
 // ===  I N I T  B O A R D S  ===
 // ==============================
@@ -1969,6 +1998,7 @@ void initBoards(void)
   sendCmd(SETOFF);     // turn all LEDS off on others
 
   initDACs();          // reset DACs and enable reference
+
 
   ledsOff(0x0f);       // and myself
   for ( uint8_t color = 0; color < 4; color++ ) // reset all intensity values
@@ -2023,21 +2053,7 @@ void initGainOffset(void)
     uint8_t inited = 0x55;
     EEPROM.put(EE_INITED, inited);
     
-    for ( int clr = 0; clr < 4; clr++)
-    {
-      for ( int quad = 0; quad < 4; quad++ )
-      {
-        EEPROM.get(clr * 16 +  quad * 4, LEDgain[clr][quad]);
-        EEPROM.get(OFFSET_ADR + clr *4 + quad, LEDoffset[clr][quad]);
-        #ifdef DEBUG 
-           Serial.print(LEDgain[clr][quad]);
-           Serial.print(',');
-           Serial.print(LEDoffset[clr][quad]); 
-           Serial.print(' ');
-        #endif   
-      } 
-      Serial.println(); 
-    } 
+    loadGainOffset();
   
 }
 
@@ -3858,8 +3874,11 @@ void setup()
   // if gains not initialized, then do it
   uint8_t inited;
   EEPROM.get(EE_INITED, inited);
+//  Serial.println(inited, HEX);
   if( inited != 0x55 )
      initGainOffset(); 
+  
+  loadGainOffset();  
  
 #ifdef PWMCONTROL
   onQuadrants = 0xff;
