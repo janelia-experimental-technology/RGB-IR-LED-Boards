@@ -67,7 +67,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // VERSIONS
 //
-#define VERSION 20260220
+#define VERSION 20260518
+
+// 20260518 sws
+// - added a setting to markers (via MARKER cmd) to allow the markers state to always reflect the color's intensity
+//   NOTE: This assumes sets the ON command and turns colors on and off only through color (RED,GRN,BLU) commands
+//      if a color is OFF but the intensity is changed, then the marker will turn on
+//    MARKER F ON will allow the markers to 'F'ollow the LED state
+//    MARKER F OFF will put back to normal mode
 
 // 20260220 sws
 // - was not loading gains and offsets at boot - make it a separate routine
@@ -539,6 +546,8 @@ uint8_t onQuadrants = 0x00;  // track which quadrants are turned on - default to
 uint8_t onColors[] = {0x00, 0x00, 0x00 };  // which colors are set to 0% - Blue, Green, Red , bit pattern for quadrants (up to 8)
 
 boolean colorsAreOn = false;
+
+boolean markerFollow = false;
 
 int pwmStatus = -1;   // -1 == off, else which color
 
@@ -1234,6 +1243,14 @@ int8_t doIntensity( int arg_cnt, char **args, uint8_t color)
     }  // endif panel chosen
     // now - set the intensity
     newIntensity( percent, color, panel, quadrant);
+    // if we enabled the markers to always follow the color's brightness, then do it
+    if(markerFollow == true)   
+    {
+      if( percent > 0 ) 
+        markerOn(color);
+      else
+        markerOff(color);
+    }
 
   } // endif percent
   else
@@ -1366,6 +1383,16 @@ int8_t doOnOff(int arg_cnt, char **args, uint8_t onoff)
   return 0;
 }
 
+// =========================
+// ===  R E D M   C M D  ===
+// =========================
+
+void redmCmd(int arg_cnt, char **args)
+{
+  markerOn(RED);
+  doIntensity(arg_cnt, args, RED);
+}
+
 // =======================
 // ===  R E D   C M D  ===
 // =======================
@@ -1385,6 +1412,16 @@ void redCmd(int arg_cnt, char **args)
   doIntensity(arg_cnt, args, RED);
 }
 
+// =========================
+// ===  G R N M   C M D  ===
+// =========================
+
+void greenmCmd(int arg_cnt, char **args)
+{
+  markerOn(GRN);
+  doIntensity(arg_cnt, args, GRN);
+}
+
 // ===========================
 // ===  G R E E N   C M D  ===
 // ===========================
@@ -1392,6 +1429,16 @@ void redCmd(int arg_cnt, char **args)
 void greenCmd(int arg_cnt, char **args)
 {
   doIntensity(arg_cnt, args, GRN);
+}
+
+// =========================
+// ===  B L U M   C M D  ===
+// =========================
+
+void bluemCmd(int arg_cnt, char **args)
+{
+  markerOn(BLU);
+  doIntensity(arg_cnt, args, BLU);
 }
 
 // ========================
@@ -2907,6 +2954,8 @@ void markerCmd(int arg_cnt, char **args)  //marker test
           markerOn(BLU);
         if ( strchr(args[1], 'D') )
           markerOn(DIG);  
+        if ( strchr(args[1], 'F') )
+          markerFollow = true;  
       }
       else if( strchr(args[2], 'F') )
       {
@@ -2917,7 +2966,9 @@ void markerCmd(int arg_cnt, char **args)  //marker test
         if ( strchr(args[1], 'B') )
           markerOff(BLU); 
         if ( strchr(args[1], 'D') )
-          markerOff(DIG);            
+          markerOff(DIG); 
+        if ( strchr(args[1], 'F') )
+          markerFollow = false;             
       }
    }
    else
